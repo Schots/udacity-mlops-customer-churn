@@ -1,4 +1,4 @@
-# udacity-mlops-customer-churn
+# Customer Churn
 Udacity ML Devops Nanodegree First Assigment
 
 ## Project Structure
