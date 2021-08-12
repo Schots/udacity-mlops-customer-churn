@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import configparser
@@ -120,11 +121,51 @@ def get_barplot(data,percentual=True):
 def get_histogram(data):
     df=data.copy()
     ax=df.plot(kind="hist")
-    
     return ax
 
 def numericalize_target(data,target,positive_class):
     data[target] = (data[target] == positive_class).astype(int)
     return data[target]
+
+def set_target_plot(data,target):
+    df=data.copy()
+    config=read_config()
+    bar_data= df[target].value_counts(normalize=True,dropna=False)
+    filename=config["EDA_TARGET"]["TARGET_DISTRIBUTION_FILENAME"]
+    return bar_data,filename
+
+def set_cardinality_plot(data,target):
+    df=data.copy()
+    config=read_config()
+    categorical_features=get_categorical(df,target)
+    bar_data= df[categorical_features].nunique()
+    filename=config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_FILENAME"]
+    return bar_data,filename
+
+def set_target_correlations_plot(data,
+                            positive_class,
+                            target):
+
+    df=data.copy()
+    config=read_config()
+    df[target] = numericalize_target(df,target,positive_class)
+    numerical_features=get_numerical(df,target)
+    bar_data = df[numerical_features].corrwith(df[target]).sort_values()
+    filename=config["EDA_TARGET"]["TARGET_CORRELATIONS_FILENAME"]
+    return bar_data,filename
+
+def set_feature_correlations_plot(data,
+                            positive_class,
+                            target):
+    df=data.copy()
+    config=read_config()
+    df[target] = numericalize_target(df,target,positive_class)
+    numerical=get_numerical(data,target)
+    midpoint=data[numerical].corr().mean().mean()
+    corr_data = df[numerical + [target]].corr()
+    non_exaustive_corr = np.triu(corr_data)
+    filename=config["EDA_NUMERICAL"]["NUMERICAL_FEATURES_CORRELATIONS_FILENAME"]
+    return midpoint,corr_data,non_exaustive_corr,filename
+
 
 #####################################################################################

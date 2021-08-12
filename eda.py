@@ -1,6 +1,5 @@
 import configparser
-from churn_library import (import_data,plot_distribution,plot_target_correlations,
-                        plot_features_correlations,plot_grid)
+from churn_library import (import_data,eda_single_plot,eda_grid_plot)
 
 from utils import read_config
 
@@ -12,40 +11,44 @@ def run_eda():
 
     data = import_data(config["DATA"]["PATH"])
 
-    plot_distribution(data=data,
-                        kind="target",
+    eda_single_plot(data=data,
+                        kind="target_distribution",
                         title=config["EDA_TARGET"]["TARGET_DISTRIBUTION_TITLE"],
                         xlabel="% of observations",
                         )
 
-    plot_target_correlations(data=data,
-                            title=config["EDA_TARGET"]["TARGET_CORRELATIONS_TITLE"])
+    eda_single_plot(data=data,
+                        kind="target_correlations",
+                        title=config["EDA_TARGET"]["TARGET_CORRELATIONS_TITLE"],
+                        xlabel="% of observations",
+                        )
 
-    plot_features_correlations(data=data,
-                            title=config["EDA_NUMERICAL"]["NUMERICAL_FEATURES_CORRELATIONS_TITLE"],
+    eda_single_plot(data=data,
+                        kind="feature_correlations",
+                        title=config["EDA_NUMERICAL"]["NUMERICAL_FEATURES_CORRELATIONS_TITLE"],
                                 )
 
-    plot_distribution(data=data,
-                    kind="cardinality",
-                    title=config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_TITLE"],
+    eda_single_plot(data=data,
+                        kind="categorical_cardinality",
+                        title=config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_TITLE"],
                             )
 
-    plot_grid(data=data,
+    eda_grid_plot(data=data,
             gridtitle=config["EDA_CATEGORICAL"]["GRID_TITLE"],
             kind="Rate"
             )
 
-    plot_grid(data=data,
+    eda_grid_plot(data=data,
             gridtitle=config["EDA_NUMERICAL"]["GRID_TITLE"],
             kind="distribution",
             )
 
-    plot_grid(data=data,
+    eda_grid_plot(data=data,
             kind="histogram",
             gridtitle=config["EDA_NUMERICAL"]["HISTOGRAM_TITLE"])
 
             
-    plot_grid(data=data,
+    eda_grid_plot(data=data,
             kind="strip",
             gridtitle=config["EDA_NUMERICAL"]["STRIPPLOT_TITLE"])
 

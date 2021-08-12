@@ -8,7 +8,8 @@ import seaborn as sns
 import numpy as np
 
 from utils import (read_config,import_data,get_categorical,get_numerical,set_plot,save_plot,
-                    set_subplots,get_barplot,get_histogram,numericalize_target)
+                    set_subplots,set_target_plot,get_barplot,get_histogram,numericalize_target,set_cardinality_plot,
+                    set_target_correlations_plot,set_feature_correlations_plot)
 
 # Read Configuration File
 
@@ -21,27 +22,42 @@ POSITIVE_CLASS=config["EDA_TARGET"]["POSITIVE_CLASS"]
 
 ############################# EDA ###############################################
 
-def plot_distribution(*,data,
+def eda_single_plot(*,data,
                     kind,
                     target=TARGET,
+                    positive_class=POSITIVE_CLASS,
                     **kwargs):
 
-    df=data.copy()
+    df=data.copy() 
     fig,ax = set_plot(**kwargs)
-    if kind.lower() =="target":
-        bar_data= df[target].value_counts(normalize=True,dropna=False)
+
+    if kind.lower() =="target_distribution":
+        bar_data,filename= set_target_plot(data,target)
         ax=get_barplot(data=bar_data,percentual=True)
-        filename=config["EDA_TARGET"]["TARGET_DISTRIBUTION_FILENAME"]
         
-    elif kind.lower() =="cardinality":
-        categorical=get_categorical(df,target)
-        bar_data= df[categorical].nunique()
+    elif kind.lower() =="categorical_cardinality":
+        bar_data,filename=set_cardinality_plot(data,target)
         ax=get_barplot(data=bar_data,percentual=False)
-        filename=config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_FILENAME"]
-        
+
+    elif kind.lower() == "target_correlations":
+        bar_data,filename=set_target_correlations_plot(data,positive_class,target)
+        ax=get_barplot(data=bar_data,percentual=True)
+
+
+    elif kind.lower() == "feature_correlations":
+        midpoint,corr_data,non_exaustive_corr,filename = set_feature_correlations_plot(data,
+                                                                                    positive_class,
+                                                                                    target)
+        ax=sns.heatmap(corr_data,
+                    cmap='Blues',
+                    mask=non_exaustive_corr,
+                    cbar=False,
+                    center=midpoint,
+                    annot=True)
+
     save_plot(fig,filename)
 
-def plot_grid(*,data,
+def eda_grid_plot(*,data,
             kind,
             title_size=15,
             target=TARGET,
@@ -84,31 +100,5 @@ def plot_grid(*,data,
             filename=config["EDA_NUMERICAL"]["HISTOGRAM_FILENAME"]
             
     save_plot(fig,filename)  
-
-def plot_target_correlations(*,data,
-                            positive_class=POSITIVE_CLASS,
-                            target=TARGET,
-                            **kwargs):
-    df=data.copy()
-    df[target] = numericalize_target(df,target,positive_class)
-    numerical=get_numerical(df,target)
-    fig,ax = set_plot(**kwargs)
-    ax = df[numerical].corrwith((data[target]==positive_class).astype(int)).sort_values().plot(kind="barh")
-    save_plot(fig,config["EDA_TARGET"]["TARGET_CORRELATIONS_FILENAME"]) 
-    
-def plot_features_correlations(*,data,
-                            positive_class=POSITIVE_CLASS,
-                            target=TARGET,
-                            annot=True,
-                            **kwargs):
-    df=data.copy()
-    df[target] = numericalize_target(df,target,positive_class)
-    numerical=get_numerical(data,target)
-    midpoint=data[numerical].corr().mean().mean()
-    fig,ax = set_plot(**kwargs)
-    correlations = df[numerical + [target]].corr()
-    non_exaustive_corr = np.triu(correlations)
-    ax=sns.heatmap(correlations,cmap='Blues',mask=non_exaustive_corr,cbar=False,center=midpoint,annot=annot)
-    save_plot(fig,config["EDA_NUMERICAL"]["NUMERICAL_FEATURES_CORRELATIONS_FILENAME"])
 
 #################################################################################################
