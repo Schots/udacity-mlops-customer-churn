@@ -1,10 +1,7 @@
-import configparser
 from churn_library import (import_data,eda_single_plot,eda_grid_plot)
 
 from utils import read_config
 
-# Read Configuration File
-config=read_config()
 
 def run_eda():
     config=read_config()
