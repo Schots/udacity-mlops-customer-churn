@@ -1,6 +1,6 @@
 import configparser
-from churn_library import (import_data,plot_target_distribution,plot_target_correlations,
-                        plot_features_correlations,plot_categorical_cardinality,plot_grid)
+from churn_library import (import_data,plot_distribution,plot_target_correlations,
+                        plot_features_correlations,plot_grid)
 
 from utils import read_config
 
@@ -12,7 +12,8 @@ def run_eda():
 
     data = import_data(config["DATA"]["PATH"])
 
-    plot_target_distribution(data=data,
+    plot_distribution(data=data,
+                        kind="target",
                         title=config["EDA_TARGET"]["TARGET_DISTRIBUTION_TITLE"],
                         xlabel="% of observations",
                         )
@@ -24,8 +25,9 @@ def run_eda():
                             title=config["EDA_NUMERICAL"]["NUMERICAL_FEATURES_CORRELATIONS_TITLE"],
                                 )
 
-    plot_categorical_cardinality(data=data,
-                                title=config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_TITLE"],
+    plot_distribution(data=data,
+                    kind="cardinality",
+                    title=config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_TITLE"],
                             )
 
     plot_grid(data=data,

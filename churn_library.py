@@ -21,26 +21,25 @@ POSITIVE_CLASS=config["EDA_TARGET"]["POSITIVE_CLASS"]
 
 ############################# EDA ###############################################
 
-def plot_target_distribution(*,data,
-                            target=TARGET,
-                             **kwargs):
+def plot_distribution(*,data,
+                    kind,
+                    target=TARGET,
+                    **kwargs):
+
     df=data.copy()
-    config=read_config()
     fig,ax = set_plot(**kwargs)
-    bar_data= df[target].value_counts(normalize=True)
-    ax=get_barplot(data=bar_data,percentual=True)
-    save_plot(fig,config["EDA_TARGET"]["TARGET_DISTRIBUTION_FILENAME"])
-    
-def plot_categorical_cardinality(*,data,
-                                target=TARGET,
-                                 **kwargs):
-    df=data.copy()
-    config=read_config()
-    categorical=get_categorical(df,target)
-    fig,ax = set_plot(**kwargs)
-    bar_data=df[categorical].nunique()
-    ax=get_barplot(data=bar_data,percentual=False)
-    save_plot(fig,config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_FILENAME"])
+    if kind.lower() =="target":
+        bar_data= df[target].value_counts(normalize=True,dropna=False)
+        ax=get_barplot(data=bar_data,percentual=True)
+        filename=config["EDA_TARGET"]["TARGET_DISTRIBUTION_FILENAME"]
+        
+    elif kind.lower() =="cardinality":
+        categorical=get_categorical(df,target)
+        bar_data= df[categorical].nunique()
+        ax=get_barplot(data=bar_data,percentual=False)
+        filename=config["EDA_CATEGORICAL"]["CATEGORICAL_CARDINALITY_FILENAME"]
+        
+    save_plot(fig,filename)
 
 def plot_grid(*,data,
             kind,
@@ -50,8 +49,7 @@ def plot_grid(*,data,
             **kwargs):
     
     df=data.copy()
-    config=read_config()
-    
+        
     if (kind.lower() == "rate") or (kind.lower() == "distribution"):
         features,n_plots,n_cols,fig = set_subplots(data,target,"categorical",**kwargs)
         df[target] = numericalize_target(df,target,positive_class)
@@ -92,7 +90,6 @@ def plot_target_correlations(*,data,
                             target=TARGET,
                             **kwargs):
     df=data.copy()
-    config=read_config()
     df[target] = numericalize_target(df,target,positive_class)
     numerical=get_numerical(df,target)
     fig,ax = set_plot(**kwargs)
@@ -105,7 +102,6 @@ def plot_features_correlations(*,data,
                             annot=True,
                             **kwargs):
     df=data.copy()
-    config=read_config()
     df[target] = numericalize_target(df,target,positive_class)
     numerical=get_numerical(data,target)
     midpoint=data[numerical].corr().mean().mean()
