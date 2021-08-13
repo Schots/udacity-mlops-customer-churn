@@ -6,6 +6,7 @@
 import pandas as pd
 import seaborn as sns
 import numpy as np
+import math
 
 from utils import (read_config,import_data,get_categorical,get_numerical,set_plot,save_plot,
                     set_subplots,set_target_plot,get_barplot,get_histogram,numericalize_target,set_cardinality_plot,
@@ -75,8 +76,9 @@ def eda_grid_plot(*,data,
     
     for counter,feat in zip(range(1,n_plots+1),features):
         
-        ax = fig.add_subplot(round(n_plots/n_cols),n_cols,counter)
+        ax = fig.add_subplot(math.ceil(n_plots/n_cols),n_cols,counter)
         
+
         if kind.lower() =="rate":
             bar_data=df.groupby(feat)[target].mean()
             ax = get_barplot(data=bar_data)
