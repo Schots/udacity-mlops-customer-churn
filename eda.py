@@ -32,7 +32,7 @@ def run_eda():
 
     eda_grid_plot(data=data,
             gridtitle=config["EDA_CATEGORICAL"]["GRID_TITLE"],
-            kind="Rate"
+            kind="Rate",
             )
 
     eda_grid_plot(data=data,
