@@ -4,6 +4,7 @@ from utils import read_config,has_categorical,has_numerical
 
 
 def run_eda():
+
     config=read_config()
 
     data = import_data(config["DATA"]["PATH"])
@@ -54,6 +55,11 @@ def run_eda():
             gridtitle=config["EDA_CATEGORICAL"]["GRID_TITLE"],
             kind="Rate",
             )
+
+        eda_grid_plot(data=data,
+                    gridtitle=config["EDA_NUMERICAL"]["BOXPLOT_TITLE"],
+                    kind="boxplot")
+
 
 if __name__ == "__main__":
     run_eda()

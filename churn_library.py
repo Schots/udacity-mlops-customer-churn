@@ -71,7 +71,7 @@ def eda_grid_plot(*,data,
         features,n_plots,n_cols,fig = set_subplots(data,target,"categorical",**kwargs)
         df[target] = numericalize_target(df,target,positive_class)
         
-    elif (kind.lower() == "strip") or (kind.lower() == "histogram"):
+    elif (kind.lower() == "strip") or (kind.lower() == "histogram") or (kind.lower() == "boxplot"):
         features,n_plots,n_cols,fig = set_subplots(data,target,"numerical",**kwargs)
     
     for counter,feat in zip(range(1,n_plots+1),features):
@@ -92,7 +92,7 @@ def eda_grid_plot(*,data,
             filename=config["EDA_CATEGORICAL"]["CATEGORICAL_DISTRIBUTION_FILENAME"]
                                             
         elif kind.lower()== "strip":
-            ax = sns.stripplot(x=target, y=feat, data=df)
+            ax = sns.stripplot(x=target, y=feat, data=df,alpha=0.1)
             set_plot(grid=True,ax=ax,fig=fig,title=feat)
             filename=config["EDA_NUMERICAL"]["STRIPPLOT_FILENAME"]
             
@@ -100,7 +100,12 @@ def eda_grid_plot(*,data,
             ax = df[feat].plot(kind="hist")
             set_plot(grid=True,ax=ax,fig=fig,title=feat)
             filename=config["EDA_NUMERICAL"]["HISTOGRAM_FILENAME"]
-            
+
+        elif kind.lower() == "boxplot":
+            ax = sns.boxplot(x=data[feat])
+            set_plot(grid=True,ax=ax,fig=fig,title=feat)
+            filename=config["EDA_NUMERICAL"]["BOXPLOT_FILENAME"]
+
     save_plot(fig,filename)  
 
 #################################################################################################
