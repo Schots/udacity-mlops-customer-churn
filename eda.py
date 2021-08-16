@@ -1,6 +1,6 @@
-from churn_library import (import_data,eda_single_plot,eda_grid_plot)
+from churn_library import (import_data,eda_single_plot,eda_grid_plot,TARGET)
 
-from utils import read_config,has_categorical,has_numerical
+from utils import read_config,get_categorical,get_numerical
 
 
 def run_eda():
@@ -16,7 +16,7 @@ def run_eda():
                         xlabel="% of observations",
                         )
 
-    if has_numerical:
+    if get_numerical(data,TARGET):
         
         eda_single_plot(data=data,
                         kind="target_correlations",
@@ -44,7 +44,7 @@ def run_eda():
             gridtitle=config["EDA_NUMERICAL"]["STRIPPLOT_TITLE"])
 
     
-    if has_categorical:
+    if get_categorical(data,TARGET):
 
         eda_single_plot(data=data,
                         kind="categorical_cardinality",

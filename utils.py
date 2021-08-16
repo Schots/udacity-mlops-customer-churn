@@ -167,14 +167,4 @@ def set_feature_correlations_plot(data,
     filename=config["EDA_NUMERICAL"]["NUMERICAL_FEATURES_CORRELATIONS_FILENAME"]
     return midpoint,corr_data,non_exaustive_corr,filename
 
-def has_categorical(data,target):
-    if get_categorical(data,target):
-        return True
-    return False
-
-def has_numerical(data,target):
-    if get_numerical(data,target):
-        return True
-    return False
-
 #####################################################################################
